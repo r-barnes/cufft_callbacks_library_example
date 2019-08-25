@@ -26,6 +26,6 @@ namespace kernels {
 
 void create_fft_plan(const int side_size);
 void destroy_fft_plan();
-void scaled_ifft2_inplace(cfloat *const data_dev_ptr, cfloat *const scaling_dev_ptr, const int n);
+void scaled_ifft2_inplace(cfloat *const data_dev_ptr, cfloat *const scaling_dev_ptr, const int n, const bool generate_plan);
 
 }

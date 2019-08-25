@@ -53,9 +53,16 @@ __device__ void cu_ifft_post_normalize(
 __device__ cufftCallbackLoadC  d_loadCallbackPtr  = cu_ifft_prescale;
 __device__ cufftCallbackStoreC d_storeCallbackPtr = cu_ifft_post_normalize;
 
-void scaled_ifft2_inplace(cfloat *const data_dev_ptr, cfloat *const scaling_dev_ptr, const int n){
-  cufftHandle fft_plan;
-  cufftPlan2d(&fft_plan, n, n, CUFFT_C2C);
+void scaled_ifft2_inplace(cfloat *const data_dev_ptr, cfloat *const scaling_dev_ptr, const int n, const bool generate_plan){
+  cufftHandle my_fft_plan;
+
+  if(generate_plan){
+    cufftPlan2d(&my_fft_plan, n, n, CUFFT_C2C);
+  } else if(!fft_plan){
+    throw std::runtime_error("No FFT plan!");
+  } else {
+    my_fft_plan = fft_plan;
+  }
 
   cufftCallbackLoadC h_loadCallbackPtr;
   cufftCallbackStoreC h_storeCallbackPtr;
@@ -66,22 +73,25 @@ void scaled_ifft2_inplace(cfloat *const data_dev_ptr, cfloat *const scaling_dev_
                                         d_storeCallbackPtr,
                                         sizeof(h_storeCallbackPtr)));
 
-  CheckCudaErrors(cufftXtSetCallback(fft_plan,
+  CheckCudaErrors(cufftXtSetCallback(my_fft_plan,
                           (void **)&h_loadCallbackPtr,
                           CUFFT_CB_LD_COMPLEX,
                           (void**)&scaling_dev_ptr));
 
-  CheckCudaErrors(cufftXtSetCallback(fft_plan,
+  CheckCudaErrors(cufftXtSetCallback(my_fft_plan,
                               (void **)&h_storeCallbackPtr,
                               CUFFT_CB_ST_COMPLEX,
                               0));
 
   CheckCudaErrors(cudaDeviceSynchronize());
 
-  CheckCudaErrors(cufftExecC2C(fft_plan, data_dev_ptr, data_dev_ptr, CUFFT_INVERSE));
+  CheckCudaErrors(cufftExecC2C(my_fft_plan, data_dev_ptr, data_dev_ptr, CUFFT_INVERSE));
 
   CheckCudaErrors(cudaDeviceSynchronize());
-  CheckCudaErrors(cufftDestroy(fft_plan));
+
+  if(generate_plan){
+    CheckCudaErrors(cufftDestroy(my_fft_plan));
+  }
 }
 
 }
