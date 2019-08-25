@@ -7,6 +7,8 @@
 
 #include "kernels.h"
 
+namespace kernels {
+
 __device__ cufftComplex cu_ifft_prescale(
     void *data_ptr,
     size_t offset,
@@ -66,4 +68,6 @@ void scaled_ifft2_inplace(cfloat *const data_dev_ptr, cfloat *const scaling_dev_
 
   CheckCudaErrors(cudaDeviceSynchronize());
   CheckCudaErrors(cufftDestroy(fft_plan));
+}
+
 }

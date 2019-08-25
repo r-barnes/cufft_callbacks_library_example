@@ -22,4 +22,8 @@ inline void gpuAssert(cufftResult code, const char *file, int line, bool abort=t
    }
 }
 
+namespace kernels {
+
 void scaled_ifft2_inplace(cfloat *const data_dev_ptr, cfloat *const scaling_dev_ptr, const int n);
+
+}
