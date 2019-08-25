@@ -25,10 +25,13 @@ int main(){
          {1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},
          {1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000},{1.0000,0.0000}};
 
+    auto vecorig = vec;
+
     std::cout<<"Generating plan anew for each kernel..."<<std::endl;
     for(int i=0;i<20;i++){
         std::cout<<"\t"<<i<<std::endl;
         scaled_ifft_inplace(vec, ones, 8, true);
+        vec = vecorig;
     }
 
     std::cout<<"Trying to use pregenerated plan..."<<std::endl;
@@ -36,6 +39,7 @@ int main(){
     for(int i=0;i<20;i++){
         std::cout<<"\t"<<i<<std::endl;
         scaled_ifft_inplace(vec, ones, 8, false);
+        vec = vecorig;
     }
     destroy_fft_plan();
 
