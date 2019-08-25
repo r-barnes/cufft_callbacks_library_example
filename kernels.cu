@@ -9,6 +9,20 @@
 
 namespace kernels {
 
+cufftHandle fft_plan = 0;
+void create_fft_plan(const int side_size){
+  CheckCudaErrors(cufftPlan2d(&fft_plan, side_size, side_size, CUFFT_C2C));
+  CheckCudaErrors(cudaDeviceSynchronize());
+}
+
+
+
+void destroy_fft_plan(){
+  CheckCudaErrors(cufftDestroy(fft_plan));
+}
+
+
+
 __device__ cufftComplex cu_ifft_prescale(
     void *data_ptr,
     size_t offset,

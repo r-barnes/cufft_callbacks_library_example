@@ -7,6 +7,14 @@
 #include <iostream>
 #include <vector>
 
+void create_fft_plan(const int side_size){
+    kernels::create_fft_plan(side_size);
+}
+
+void destroy_fft_plan(){
+    kernels::destroy_fft_plan();
+}
+
 void scaled_ifft_inplace(std::vector<std::complex<float>> &vec, const std::vector<std::complex<float>> &scale, const int side_size){
     const auto bytes_len = side_size*side_size*sizeof(cfloat);
 
